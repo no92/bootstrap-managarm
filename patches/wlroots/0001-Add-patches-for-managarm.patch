@@ -1,0 +1,192 @@
+From 4ef30c289ad44edfdf659cdd41eee610a8d5f5fe Mon Sep 17 00:00:00 2001
+From: no92 <no92.mail@gmail.com>
+Date: Sun, 17 Jan 2021 17:33:45 +0100
+Subject: [PATCH] Add patches for managarm
+
+---
+ backend/libinput/tablet_tool.c       |  1 +
+ backend/session/direct-ipc.c         |  2 +-
+ backend/wayland/tablet_v2.c          | 15 ++++++++-------
+ backend/x11/input_device.c           |  2 +-
+ include/wlr/backend.h                |  1 +
+ types/tablet_v2/wlr_tablet_v2_tool.c |  1 +
+ types/wlr_export_dmabuf_v1.c         |  1 +
+ types/wlr_linux_dmabuf_v1.c          |  1 +
+ types/xdg_shell/wlr_xdg_positioner.c |  2 ++
+ xwayland/server.c                    |  1 +
+ 10 files changed, 18 insertions(+), 9 deletions(-)
+
+diff --git a/backend/libinput/tablet_tool.c b/backend/libinput/tablet_tool.c
+index ff48f6a..e41c71e 100644
+--- a/backend/libinput/tablet_tool.c
++++ b/backend/libinput/tablet_tool.c
+@@ -120,6 +120,7 @@ static enum wlr_tablet_tool_type wlr_type_from_libinput_type(
+ #endif
+ 	}
+ 	abort(); // unreachable
++	__builtin_unreachable();
+ }
+
+ static struct wlr_libinput_tablet_tool *get_wlr_tablet_tool(
+diff --git a/backend/session/direct-ipc.c b/backend/session/direct-ipc.c
+index 42ca00e..7ecd294 100644
+--- a/backend/session/direct-ipc.c
++++ b/backend/session/direct-ipc.c
+@@ -16,7 +16,7 @@
+ #include <wlr/config.h>
+ #include <wlr/util/log.h>
+ #include <xf86drm.h>
+-#ifdef __linux__
++#if defined(__linux__) || defined(__managarm__)
+ #include <sys/sysmacros.h>
+ #include <linux/major.h>
+ #endif
+diff --git a/backend/wayland/tablet_v2.c b/backend/wayland/tablet_v2.c
+index e327fbd..cb2c4c0 100644
+--- a/backend/wayland/tablet_v2.c
++++ b/backend/wayland/tablet_v2.c
+@@ -230,7 +230,7 @@ static void handle_tablet_pad_group_ring(void *data,
+ 	}
+ 	tablet_ring->index = group->pad->ring_count++;
+ 	tablet_ring->group = group;
+-	zwp_tablet_pad_ring_v2_add_listener(ring, &tablet_pad_ring_listener,
++	zwp_tablet_pad_ring_v2_add_listener(ring, &tablet_pad_ring_listener,
+ 		tablet_ring);
+
+ 	group->group.rings = realloc(group->group.rings,
+@@ -251,7 +251,7 @@ static void handle_tablet_pad_group_strip(void *data,
+ 	}
+ 	tablet_strip->index = group->pad->strip_count++;
+ 	tablet_strip->group = group;
+-	zwp_tablet_pad_strip_v2_add_listener(strip, &tablet_pad_strip_listener,
++	zwp_tablet_pad_strip_v2_add_listener(strip, &tablet_pad_strip_listener,
+ 		tablet_strip);
+
+ 	group->group.strips = realloc(group->group.strips,
+@@ -487,6 +487,7 @@ static enum wlr_tablet_tool_type tablet_type_to_wlr_type(enum zwp_tablet_tool_v2
+ 		abort();
+ 	}
+ 	abort(); // unreachable
++	__builtin_unreachable();
+ }
+
+ static void handle_tablet_tool_type(void *data,
+@@ -521,7 +522,7 @@ static void handle_tablet_tool_capability(void *data,
+ 	struct wlr_wl_tablet_tool *tool = data;
+
+ 	enum zwp_tablet_tool_v2_capability cap = capability;
+-
++
+ 	switch (cap) {
+ 	case ZWP_TABLET_TOOL_V2_CAPABILITY_TILT:
+ 		tool->wlr_tool.tilt = true;
+@@ -674,7 +675,7 @@ static void handle_tablet_tool_frame(void *data,
+ 			.y = tool->y,
+ 			.state = WLR_TABLET_TOOL_PROXIMITY_IN,
+ 		};
+-
++
+ 		wlr_signal_emit_safe(&tablet->events.proximity, &evt);
+ 	}
+
+@@ -750,7 +751,7 @@ static void handle_tablet_tool_frame(void *data,
+ 			.y = tool->y,
+ 			.state = WLR_TABLET_TOOL_TIP_DOWN,
+ 		};
+-
++
+ 		wlr_signal_emit_safe(&tablet->events.tip, &evt);
+ 	}
+
+@@ -763,7 +764,7 @@ static void handle_tablet_tool_frame(void *data,
+ 			.y = tool->y,
+ 			.state = WLR_TABLET_TOOL_TIP_UP,
+ 		};
+-
++
+ 		wlr_signal_emit_safe(&tablet->events.tip, &evt);
+ 	}
+
+@@ -776,7 +777,7 @@ static void handle_tablet_tool_frame(void *data,
+ 			.y = tool->y,
+ 			.state = WLR_TABLET_TOOL_PROXIMITY_OUT,
+ 		};
+-
++
+ 		wlr_signal_emit_safe(&tablet->events.proximity, &evt);
+ 	}
+
+diff --git a/include/wlr/backend.h b/include/wlr/backend.h
+index 3337e51..58dfa1a 100644
+--- a/include/wlr/backend.h
++++ b/include/wlr/backend.h
+@@ -11,6 +11,7 @@
+ #include <wayland-server-core.h>
+ #include <wlr/backend/session.h>
+ #include <wlr/render/egl.h>
++#include <time.h>
+
+ struct wlr_backend_impl;
+
+diff --git a/types/tablet_v2/wlr_tablet_v2_tool.c b/types/tablet_v2/wlr_tablet_v2_tool.c
+index 7ebe503..e010175 100644
+--- a/types/tablet_v2/wlr_tablet_v2_tool.c
++++ b/types/tablet_v2/wlr_tablet_v2_tool.c
+@@ -79,6 +79,7 @@ static enum zwp_tablet_tool_v2_type tablet_type_from_wlr_type(
+ 		abort();
+ 	}
+ 	abort(); // unreachable
++	__builtin_unreachable();
+ }
+
+ void destroy_tablet_tool_v2(struct wl_resource *resource) {
+diff --git a/types/wlr_export_dmabuf_v1.c b/types/wlr_export_dmabuf_v1.c
+index 2be9e02..3976363 100644
+--- a/types/wlr_export_dmabuf_v1.c
++++ b/types/wlr_export_dmabuf_v1.c
+@@ -1,4 +1,5 @@
+ #include <assert.h>
++#include <stdio.h>
+ #include <stdlib.h>
+ #include <unistd.h>
+ #include <wlr/interfaces/wlr_output.h>
+diff --git a/types/wlr_linux_dmabuf_v1.c b/types/wlr_linux_dmabuf_v1.c
+index 7db99eb..f529c44 100644
+--- a/types/wlr_linux_dmabuf_v1.c
++++ b/types/wlr_linux_dmabuf_v1.c
+@@ -2,6 +2,7 @@
+ #include <assert.h>
+ #include <drm_fourcc.h>
+ #include <stdlib.h>
++#include <stdio.h>
+ #include <unistd.h>
+ #include <wayland-server-core.h>
+ #include <wlr/render/drm_format_set.h>
+diff --git a/types/xdg_shell/wlr_xdg_positioner.c b/types/xdg_shell/wlr_xdg_positioner.c
+index 95d5dbd..bc1fae8 100644
+--- a/types/xdg_shell/wlr_xdg_positioner.c
++++ b/types/xdg_shell/wlr_xdg_positioner.c
+@@ -178,6 +178,8 @@ static bool positioner_anchor_has_edge(enum xdg_positioner_anchor anchor,
+ 	default:
+ 		abort(); // unreachable
+ 	}
++
++	__builtin_unreachable();
+ }
+
+ static bool positioner_gravity_has_edge(enum xdg_positioner_gravity gravity,
+diff --git a/xwayland/server.c b/xwayland/server.c
+index d0057c6..541a578 100644
+--- a/xwayland/server.c
++++ b/xwayland/server.c
+@@ -121,6 +121,7 @@ noreturn static void exec_xwayland(struct wlr_xwayland_server *server) {
+        wlr_log_errno(WLR_ERROR, "failed to exec Xwayland");
+        close(devnull);
+        _exit(EXIT_FAILURE);
++       __builtin_unreachable();
+ }
+
+ static void server_finish_process(struct wlr_xwayland_server *server) {
+--
+2.29.2
+

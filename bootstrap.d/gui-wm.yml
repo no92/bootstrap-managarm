@@ -1,0 +1,43 @@
+packages:
+  - name: sway
+    source:
+      subdir: ports
+      git: 'https://github.com/swaywm/sway'
+      tag: '1.5.1'
+      version: '1.5.1'
+    tools_required:
+      - system-gcc
+      - host-libtool
+      - wayland-scanner
+      - host-cmake
+      - host-pkg-config
+      - virtual: pkgconfig-for-target
+        triple: x86_64-managarm
+    pkgs_required:
+      - cairo
+      - json-c
+      - pango
+      - pcre
+      - wayland
+      - wayland-protocols
+      - wlroots
+    configure:
+      - args:
+        - 'meson'
+        - '--cross-file'
+        - '@SOURCE_ROOT@/scripts/meson-@OPTION:arch-triple@.cross-file'
+        - '--prefix=/usr'
+        - '--libdir=lib'
+        - '--buildtype=debugoptimized'
+        - '-Dbash-completions=false'
+        - '-Dfish-completions=false'
+        - '-Dgdk-pixbuf=disabled'
+        - '-Dman-pages=disabled'
+        - '-Dxwayland=disabled'
+        - '-Dzsh-completions=false'
+        - '@THIS_SOURCE_DIR@'
+    build:
+      - args: ['ninja']
+      - args: ['ninja', 'install']
+        environ:
+          DESTDIR: '@THIS_COLLECT_DIR@'

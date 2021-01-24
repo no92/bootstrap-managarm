@@ -1,0 +1,38 @@
+packages:
+  - name: wlroots
+    source:
+      subdir: ports
+      git: 'https://github.com/swaywm/wlroots'
+      tag: "0.12.0"
+      version: "0.12.0"
+    tools_required:
+      - system-gcc
+      - host-libtool
+      - host-cmake
+      - wayland-scanner
+      - host-pkg-config
+      - virtual: pkgconfig-for-target
+        triple: x86_64-managarm
+    pkgs_required:
+      - eudev
+      - libdrm
+      - libinput
+      - libxkbcommon
+      - pixman
+      - wayland
+      - wayland-protocols
+    configure:
+      - args:
+        - 'meson'
+        - '--cross-file'
+        - '@SOURCE_ROOT@/scripts/meson-@OPTION:arch-triple@.cross-file'
+        - '--prefix=/usr'
+        - '--buildtype=debugoptimized'
+        - '-Dexamples=false'
+        - '-Dxcb-xkb=true'
+        - '@THIS_SOURCE_DIR@'
+    build:
+      - args: ['ninja']
+      - args: ['ninja', 'install']
+        environ:
+          DESTDIR: '@THIS_COLLECT_DIR@'
