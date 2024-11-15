@@ -36,6 +36,7 @@ tools:
         - '--enable-uefi-ia32'
         - '--enable-uefi-x86-64'
         - '--enable-uefi-aarch64'
+        - '--enable-uefi-riscv64'
         - '--enable-uefi-cd'
         - '--enable-bios'
         - '--enable-bios-cd'
@@ -86,6 +87,9 @@ packages:
         - !managarm::arch_dep
           arch: [aarch64]
           item: '--enable-uefi-aarch64'
+        - !managarm::arch_dep
+          arch: [riscv64]
+          item: '--enable-uefi-riscv64'
         - 'TOOLCHAIN_FOR_TARGET=@OPTION:arch-triple@'
     build:
       - args: ['make', '-j@PARALLELISM@']

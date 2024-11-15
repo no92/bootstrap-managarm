@@ -15,7 +15,9 @@ tasks:
     pkgs_required:
       - gcc
       - managarm-kernel
-      - managarm-system
+      - !managarm::arch_dep
+        arch: [x86_64, aarch64]
+        item: managarm-system
     tasks_required:
       - task: useful-image-dependencies
         order_only: true
@@ -61,9 +63,11 @@ tasks:
       - limine
       - managarm-kernel
       - !managarm::arch_dep
-        arch: [x86_64]
+        arch: [x86_64, riscv64]
         item: managarm-kernel-uefi
-      - managarm-system
+      - !managarm::arch_dep
+        arch: [x86_64, aarch64]
+        item: managarm-system
     tools_required:
       - tool: host-limine
         expose: false
@@ -84,7 +88,7 @@ tasks:
       - limine
       - managarm-kernel
       - !managarm::arch_dep
-        arch: [x86_64]
+        arch: [x86_64, riscv64]
         item: managarm-kernel-uefi
       - managarm-system
     tools_required:
