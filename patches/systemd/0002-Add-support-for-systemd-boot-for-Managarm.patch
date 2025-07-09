@@ -1,7 +1,7 @@
-From 70d8db99bb7f7e319368a28c8e892cae5d65544f Mon Sep 17 00:00:00 2001
+From f3f66d4f5fd9c0ed13a6f6636cb5dc1757af3f03 Mon Sep 17 00:00:00 2001
 From: Dennis Bonke <admin@dennisbonke.com>
 Date: Fri, 10 Jan 2025 00:55:19 +0100
-Subject: [PATCH 2/3] Add support for systemd boot for Managarm
+Subject: [PATCH 2/4] Add support for systemd boot for Managarm
 
 ---
  src/basic/capability-util.c              |  2 ++
@@ -490,5 +490,5 @@ index f4a4482..29a22b5 100644
 +#IPAddressDeny=any
  {{SERVICE_WATCHDOG}}
 -- 
-2.47.2
+2.49.0
 

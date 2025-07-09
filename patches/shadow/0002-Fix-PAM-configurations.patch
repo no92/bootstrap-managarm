@@ -1,0 +1,41 @@
+From 5baafcfec0815d3e0c943082024f970a7cd6b0ef Mon Sep 17 00:00:00 2001
+From: no92 <no92.mail@gmail.com>
+Date: Fri, 11 Jul 2025 17:03:19 +0200
+Subject: [PATCH 2/2] Fix PAM configurations
+
+---
+ etc/pam.d/login | 4 ----
+ etc/pam.d/su    | 2 --
+ 2 files changed, 6 deletions(-)
+
+diff --git a/etc/pam.d/login b/etc/pam.d/login
+index 5a64806..e53d356 100644
+--- a/etc/pam.d/login
++++ b/etc/pam.d/login
+@@ -1,11 +1,7 @@
+ #%PAM-1.0
+-auth		required	pam_securetty.so
+ auth		include		system-auth
+ account		required	pam_nologin.so
+ account		include		system-auth
+ password	include		system-auth
+-session		required	pam_selinux.so close
+ session		include		system-auth
+ session		required	pam_loginuid.so
+-session		optional	pam_console.so
+-session		required	pam_selinux.so open
+diff --git a/etc/pam.d/su b/etc/pam.d/su
+index 7ef7134..13c2327 100644
+--- a/etc/pam.d/su
++++ b/etc/pam.d/su
+@@ -7,7 +7,5 @@ auth		required	pam_wheel.so use_uid
+ auth		include		system-auth
+ account		include		system-auth
+ password	include		system-auth
+-session		required	pam_selinux.so close
+ session		include		system-auth
+-session		required	pam_selinux.so open multiple
+ session		optional	pam_xauth.so
+-- 
+2.49.0
+

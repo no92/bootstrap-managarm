@@ -1,0 +1,60 @@
+From 3613574b1f92a9bfb30202df8278341085f16777 Mon Sep 17 00:00:00 2001
+From: no92 <no92.mail@gmail.com>
+Date: Fri, 11 Jul 2025 17:02:13 +0200
+Subject: [PATCH 4/4] logind enablement
+
+---
+ src/login/pam_systemd.c       | 2 +-
+ src/update-utmp/update-utmp.c | 4 +++-
+ units/user@.service.in        | 6 +++---
+ 3 files changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/src/login/pam_systemd.c b/src/login/pam_systemd.c
+index ad15c57..a32621a 100644
+--- a/src/login/pam_systemd.c
++++ b/src/login/pam_systemd.c
+@@ -926,7 +926,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
+         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
+         _cleanup_(user_record_unrefp) UserRecord *ur = NULL;
+         int session_fd = -EBADF, existing, r;
+-        bool debug = false, remote, incomplete;
++        bool debug = true, remote, incomplete;
+         uint32_t vtnr = 0;
+         uid_t original_uid;
+ 
+diff --git a/src/update-utmp/update-utmp.c b/src/update-utmp/update-utmp.c
+index c376676..9a78a63 100644
+--- a/src/update-utmp/update-utmp.c
++++ b/src/update-utmp/update-utmp.c
+@@ -148,7 +148,9 @@ static int on_reboot(int argc, char *argv[], void *userdata) {
+ 
+         /* If this call fails, then utmp_put_reboot() will fix to the current time. */
+         (void) get_startup_monotonic_time(c, &t);
+-        boottime = map_clock_usec(t, CLOCK_MONOTONIC, CLOCK_REALTIME);
++        t = 0;
++        // boottime = map_clock_usec(t, CLOCK_MONOTONIC, CLOCK_REALTIME);
++        boottime = 0;
+         /* We query the recorded monotonic time here (instead of the system clock CLOCK_REALTIME), even
+          * though we actually want the system clock time. That's because there's a likely chance that the
+          * system clock wasn't set right during early boot. By manually converting the monotonic clock to the
+diff --git a/units/user@.service.in b/units/user@.service.in
+index 5695465..87b6d86 100644
+--- a/units/user@.service.in
++++ b/units/user@.service.in
+@@ -21,10 +21,10 @@ Type=notify-reload
+ ExecStart={{LIBEXECDIR}}/systemd --user
+ Slice=user-%i.slice
+ KillMode=mixed
+-Delegate=pids memory cpu
+-DelegateSubgroup=init.scope
++#Delegate=pids memory cpu
++#DelegateSubgroup=init.scope
+ TasksMax=infinity
+ TimeoutStopSec={{ DEFAULT_USER_TIMEOUT_SEC*4//3 }}s
+ KeyringMode=inherit
+-OOMScoreAdjust=100
++#OOMScoreAdjust=100
+ MemoryPressureWatch=skip
+-- 
+2.49.0
+

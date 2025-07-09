@@ -1,7 +1,7 @@
-From a0a3c21b74484544e07683bed59e089707e47781 Mon Sep 17 00:00:00 2001
+From f7dd32d51d83b36545f658cf79d496e1b0d4ba26 Mon Sep 17 00:00:00 2001
 From: Dennis Bonke <admin@dennisbonke.com>
 Date: Thu, 5 Sep 2024 00:27:05 +0200
-Subject: [PATCH] Add Managarm support
+Subject: [PATCH 1/2] Add Managarm support
 
 Signed-off-by: Dennis Bonke <admin@dennisbonke.com>
 ---
@@ -209,5 +209,5 @@ index 00508cd..af876c9 100644
  #ifndef USE_PAM			/* PAM does this */
  	/*
 -- 
-2.47.2
+2.49.0
 

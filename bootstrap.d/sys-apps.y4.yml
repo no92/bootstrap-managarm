@@ -1009,6 +1009,7 @@ packages:
       - libxcrypt
       - libiconv
       - libintl
+      - pam
     revision: 6
     configure:
       - args:
@@ -1021,7 +1022,7 @@ packages:
         - '--enable-shared'
         - '--disable-nls'
         - '--without-audit'
-        - '--without-libpam'
+        - '--with-libpam'
         - '--without-btrfs'
         - '--without-selinux'
         - '--without-acl'
@@ -1041,7 +1042,7 @@ packages:
           ac_cv_header_sys_capability_h: 'no'
     build:
       - args: ['make', '-j@PARALLELISM@']
-      - args: ['make', 'pamddir=', 'exec_prefix=/usr', 'install']
+      - args: ['make', 'exec_prefix=/usr', 'install']
         environ:
           DESTDIR: '@THIS_COLLECT_DIR@'
 
@@ -1262,7 +1263,7 @@ packages:
         - '--disable-rtcwake'
         - '--disable-setarch'
         - '--disable-tunelp'
-        - '--disable-wall'
+        - '--enable-wall'
         - '--disable-bash-completion'
         - '--without-cap-ng'
         - '--without-btrfs'
@@ -1312,8 +1313,8 @@ packages:
         - '--disable-nls'
         - '--disable-static'
         - '--without-python'
-        - '--without-systemd'
-        - '--without-systemdsystemunitdir'
+        - '--with-systemd'
+        - '--with-systemdsystemunitdir'
         - '--disable-partx'
         - '--disable-fallocate'
         - '--disable-unshare'
@@ -1487,7 +1488,8 @@ packages:
         - '--buildtype=debugoptimized'
         - '-Dsession_dummy=enabled'
         - '-Dsession_terminal=enabled'
-        - '-Dmulti_seat=disabled'
+        # - '-Dmulti_seat=disabled'
+        - '-Dextra_debug=true'
         - '@THIS_SOURCE_DIR@'
     build:
       - args: ['ninja']
@@ -1575,6 +1577,7 @@ packages:
       - shadow
       - openssl
       - util-linux-libs
+      - pam
       - mlibc
     revision: 8
     configure:
@@ -1592,6 +1595,7 @@ packages:
         - '-Dapparmor=false'
         - '-Daudit=false'
         - '-Dbacklight=false'
+        - '-Dbootloader=false'
         - '-Dbinfmt=false'
         - '-Dbpf-framework=false'
         - '-Dbzip2=false'
@@ -1607,6 +1611,7 @@ packages:
         - '-Dhibernate=false'
         - '-Dhostnamed=false'
         - '-Didn=false'
+        - '-Defi=false'
         - '-Dima=false'
         - '-Dinitrd=false'
         - '-Dfirstboot=false'
@@ -1618,7 +1623,7 @@ packages:
         - '-Dlibidn2=false'
         - '-Dlibiptc=false'
         - '-Dlocaled=false'
-        - '-Dlogind=false'
+        - '-Dlogind=true'
         - '-Dlz4=false'
         - '-Dmachined=false'
         - '-Dmicrohttpd=false'
@@ -1630,7 +1635,7 @@ packages:
         - '-Doomd=false'
         - '-Dopenssl=false'
         - '-Dp11kit=false'
-        - '-Dpam=false'
+        - '-Dpam=true'
         - '-Dpcre2=false'
         - '-Dpolkit=false'
         - '-Dportabled=false'
@@ -1670,12 +1675,12 @@ packages:
       - args: ['rm', '@THIS_COLLECT_DIR@/usr/lib/systemd/system/sysinit.target.wants/systemd-ask-password-console.path']
       - args: ['rm', '@THIS_COLLECT_DIR@/usr/lib/systemd/system/systemd-ask-password-console.service']
       # These are part of utmp, but don't work yet, investigate later
-      - args: ['rm', '@THIS_COLLECT_DIR@/usr/lib/systemd/system/systemd-update-utmp.service']
-      - args: ['rm', '@THIS_COLLECT_DIR@/usr/lib/systemd/system/systemd-update-utmp-runlevel.service']
-      - args: ['rm', '@THIS_COLLECT_DIR@/usr/lib/systemd/system/graphical.target.wants/systemd-update-utmp-runlevel.service']
-      - args: ['rm', '@THIS_COLLECT_DIR@/usr/lib/systemd/system/multi-user.target.wants/systemd-update-utmp-runlevel.service']
-      - args: ['rm', '@THIS_COLLECT_DIR@/usr/lib/systemd/system/rescue.target.wants/systemd-update-utmp-runlevel.service']
-      - args: ['rm', '@THIS_COLLECT_DIR@/usr/lib/systemd/system/sysinit.target.wants/systemd-update-utmp.service']
+      # - args: ['rm', '@THIS_COLLECT_DIR@/usr/lib/systemd/system/systemd-update-utmp.service']
+      # - args: ['rm', '@THIS_COLLECT_DIR@/usr/lib/systemd/system/systemd-update-utmp-runlevel.service']
+      # - args: ['rm', '@THIS_COLLECT_DIR@/usr/lib/systemd/system/graphical.target.wants/systemd-update-utmp-runlevel.service']
+      # - args: ['rm', '@THIS_COLLECT_DIR@/usr/lib/systemd/system/multi-user.target.wants/systemd-update-utmp-runlevel.service']
+      # - args: ['rm', '@THIS_COLLECT_DIR@/usr/lib/systemd/system/rescue.target.wants/systemd-update-utmp-runlevel.service']
+      # - args: ['rm', '@THIS_COLLECT_DIR@/usr/lib/systemd/system/sysinit.target.wants/systemd-update-utmp.service']
       # Touch up empty directories
       - args: ['touch',
           '@THIS_COLLECT_DIR@/usr/lib/systemd/system/runlevel1.target.wants/.keep',

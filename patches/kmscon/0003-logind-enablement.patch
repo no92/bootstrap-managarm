@@ -1,0 +1,64 @@
+From 1fbeb295b640348e96fae8d20c80a8dc384eb57c Mon Sep 17 00:00:00 2001
+From: no92 <no92.mail@gmail.com>
+Date: Fri, 11 Jul 2025 17:04:06 +0200
+Subject: [PATCH 3/3] logind enablement
+
+---
+ docs/kmscon.service.in |  5 ++++-
+ src/uterm_monitor.c    | 19 ++++++++-----------
+ 2 files changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/docs/kmscon.service.in b/docs/kmscon.service.in
+index 398469e..3a3cb9e 100644
+--- a/docs/kmscon.service.in
++++ b/docs/kmscon.service.in
+@@ -1,10 +1,13 @@
+ [Unit]
+ Description=KMS System Console
+ Documentation=man:kmscon(1)
++After=plymouth-quit-wait.service
++After=systemd-user-sessions.service
+ 
+ [Service]
+ ExecStartPre=@bindir@/wait-for-devices --want-graphics --want-keyboard
+-ExecStart=@bindir@/kmscon -l /bin/login
++ExecStart=@bindir@/kmscon -l /bin/login -v --debug
++# ExecStart=@bindir@/kmscon --login -- /sbin/agetty -o '-p -- \\u' --noclear -- -
+ 
+ [Install]
+ WantedBy=multi-user.target
+diff --git a/src/uterm_monitor.c b/src/uterm_monitor.c
+index 53f31c2..1b644a1 100644
+--- a/src/uterm_monitor.c
++++ b/src/uterm_monitor.c
+@@ -630,19 +630,16 @@ static void monitor_udev_add(struct uterm_monitor *mon,
+ 		}
+ 		p = udev_device_get_parent_with_subsystem_devtype(dev,
+ 								"input", NULL);
+-		/* parent devices are only required for multiseat */
+-		if (p) {
+-			if (mon->sd && udev_device_has_tag(p, "seat") != 1) {
+-				log_debug("adding non-seat'ed device %s", name);
+-				return;
+-			}
+-			sname = udev_device_get_property_value(p, "ID_SEAT");
+-		}else{
++		if (!p) {
+ 			log_debug("adding device without parent %s", name);
+-			if(mon->sd)
+-				return;
+-			sname = NULL;
++			// return;
+ 		}
++		if (mon->sd && p && udev_device_has_tag(p, "seat") != 1) {
++			log_debug("adding non-seat'ed device %s", name);
++			return;
++		}
++		// sname = udev_device_get_property_value(p, "ID_SEAT");
++		sname = NULL;
+ 		type = UTERM_MONITOR_INPUT;
+ 		flags = 0;
+ 	} else {
+-- 
+2.49.0
+

@@ -671,3 +671,42 @@ packages:
           BUILD_CC: 'gcc'
           BUILD_ld: 'ld'
           SYSTEM_HEADERS: '@SYSROOT_DIR@/usr/include'
+
+  - name: pam
+    labels: [aarch64, riscv64]
+    architecture: '@OPTION:arch@'
+    metadata:
+      summary: Standard PAM library
+      description: This package provides the Pluggable Authentication Modules (PAM) library.
+      spdx: 'LGPL-2.1-or-later'
+      website: 'https://github.com/linux-pam/linux-pam'
+      maintainer: "no92 <leo@managarm.org>"
+      categories: ['sys-libs']
+    source:
+      subdir: ports
+      git: 'https://github.com/linux-pam/linux-pam.git'
+      tag: 'v1.7.1'
+      version: '1.7.1'
+    tools_required:
+      - system-gcc
+    pkgs_required:
+      - mlibc
+      - libxcrypt
+    revision: 1
+    configure:
+      - args:
+        - 'meson'
+        - 'setup'
+        - '--cross-file'
+        - '@SOURCE_ROOT@/scripts/meson-@OPTION:arch-triple@.cross-file'
+        - '--prefix=/usr'
+        - '-Ddocs=disabled'
+        - '@THIS_SOURCE_DIR@'
+    build:
+      - args: ['ninja']
+      - args: ['ninja', 'install']
+        environ:
+          DESTDIR: '@THIS_COLLECT_DIR@'
+      - args: ['mkdir', '-p', '@THIS_COLLECT_DIR@/etc/pam.d']
+      - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/other', '@THIS_COLLECT_DIR@/etc/pam.d/']
+      - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/system-auth', '@THIS_COLLECT_DIR@/etc/pam.d/']
