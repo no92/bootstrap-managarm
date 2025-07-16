@@ -1010,7 +1010,7 @@ packages:
       - libiconv
       - libintl
       - pam
-    revision: 6
+    revision: 7
     configure:
       - args:
         - '@THIS_SOURCE_DIR@/configure'
@@ -1041,10 +1041,28 @@ packages:
           ac_cv_func_fsync: 'no'
           ac_cv_header_sys_capability_h: 'no'
     build:
-      - args: ['make', '-j@PARALLELISM@']
+      - args: ['make', 'pamddir=', '-j@PARALLELISM@']
       - args: ['make', 'exec_prefix=/usr', 'install']
         environ:
           DESTDIR: '@THIS_COLLECT_DIR@'
+      # Install PAM files
+      - args: ['mkdir', '-p', '@THIS_COLLECT_DIR@/etc/pam.d']
+      - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/login', '@THIS_COLLECT_DIR@/etc/pam.d/']
+      - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/chage', '@THIS_COLLECT_DIR@/etc/pam.d/']
+      - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/chfn', '@THIS_COLLECT_DIR@/etc/pam.d/']
+      - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/chgpasswd', '@THIS_COLLECT_DIR@/etc/pam.d/']
+      - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/chpasswd', '@THIS_COLLECT_DIR@/etc/pam.d/']
+      - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/chsh', '@THIS_COLLECT_DIR@/etc/pam.d/']
+      - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/groupadd', '@THIS_COLLECT_DIR@/etc/pam.d/']
+      - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/groupdel', '@THIS_COLLECT_DIR@/etc/pam.d/']
+      - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/groupmems', '@THIS_COLLECT_DIR@/etc/pam.d/']
+      - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/groupmod', '@THIS_COLLECT_DIR@/etc/pam.d/']
+      - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/newusers', '@THIS_COLLECT_DIR@/etc/pam.d/']
+      - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/passwd', '@THIS_COLLECT_DIR@/etc/pam.d/']
+      - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/su', '@THIS_COLLECT_DIR@/etc/pam.d/']
+      - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/useradd', '@THIS_COLLECT_DIR@/etc/pam.d/']
+      - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/userdel', '@THIS_COLLECT_DIR@/etc/pam.d/']
+      - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/usermod', '@THIS_COLLECT_DIR@/etc/pam.d/']
 
   - name: ripgrep
     architecture: '@OPTION:arch@'
@@ -1579,7 +1597,7 @@ packages:
       - util-linux-libs
       - pam
       - mlibc
-    revision: 8
+    revision: 9
     configure:
       - args:
         - 'meson'
@@ -1681,6 +1699,9 @@ packages:
       # - args: ['rm', '@THIS_COLLECT_DIR@/usr/lib/systemd/system/multi-user.target.wants/systemd-update-utmp-runlevel.service']
       # - args: ['rm', '@THIS_COLLECT_DIR@/usr/lib/systemd/system/rescue.target.wants/systemd-update-utmp-runlevel.service']
       # - args: ['rm', '@THIS_COLLECT_DIR@/usr/lib/systemd/system/sysinit.target.wants/systemd-update-utmp.service']
+      # Install PAM files
+      - args: ['mkdir', '-p', '@THIS_COLLECT_DIR@/etc/pam.d']
+      - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/systemd-user', '@THIS_COLLECT_DIR@/etc/pam.d/']
       # Touch up empty directories
       - args: ['touch',
           '@THIS_COLLECT_DIR@/usr/lib/systemd/system/runlevel1.target.wants/.keep',

@@ -710,3 +710,6 @@ packages:
       - args: ['mkdir', '-p', '@THIS_COLLECT_DIR@/etc/pam.d']
       - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/other', '@THIS_COLLECT_DIR@/etc/pam.d/']
       - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/system-auth', '@THIS_COLLECT_DIR@/etc/pam.d/']
+      - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/system-session', '@THIS_COLLECT_DIR@/etc/pam.d/']
+      - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/system-account', '@THIS_COLLECT_DIR@/etc/pam.d/']
+      - args: ['cp', '@SOURCE_ROOT@/extrafiles/pam.d/system-password', '@THIS_COLLECT_DIR@/etc/pam.d/']
